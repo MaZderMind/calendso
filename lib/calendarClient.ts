@@ -1,5 +1,6 @@
 
 const {google} = require('googleapis');
+const {v4: uuidv4} = require('uuid');
 const credentials = process.env.GOOGLE_API_CREDENTIALS;
 
 const googleAuth = () => {
@@ -163,12 +164,21 @@ const GoogleCalendar = (credential) => {
                         {'method': 'email', 'minutes': 60}
                     ],
                 },
+                conferenceData: {
+                    createRequest: {
+                        requestId: uuidv4(),
+                        conferenceSolutionKey: {
+                            type: "hangoutsMeet"
+                        }
+                    }
+                },
             };
 
             const calendar = google.calendar({version: 'v3', auth: myGoogleAuth });
             calendar.events.insert({
                 auth: myGoogleAuth,
                 calendarId: 'primary',
+                conferenceDataVersion: '1',
                 resource: payload,
             }, function(err, event) {
                 if (err) {

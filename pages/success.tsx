@@ -9,7 +9,7 @@ const ics = require('ics');
 
 export default function Success(props) {
     const router = useRouter();
-    const { date } = router.query;
+    const { date, hangoutLink } = router.query;
 
     function eventLink(): string {
 
@@ -57,6 +57,9 @@ export default function Success(props) {
                                         <p className="text-sm text-gray-500">
                                             You are scheduled in with {props.user.name || props.user.username}.
                                         </p>
+                                        {hangoutLink && <p className="text-sm text-gray-500">
+                                            <Link href={hangoutLink}>Join Google Meet</Link>
+                                        </p>}
                                     </div>
                                     <div className="mt-4 border-t border-b py-4">
                                         <h2 className="text-lg font-medium text-gray-600 mb-2">{props.eventType.title} with {props.user.name}</h2>

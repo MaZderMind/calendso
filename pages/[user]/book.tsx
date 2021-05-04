@@ -9,9 +9,9 @@ export default function Book(props) {
     const router = useRouter();
     const { date, user } = router.query;
 
-    const bookingHandler = event => {
+    const bookingHandler = async (event) => {
         event.preventDefault();
-        const res = fetch(
+        const res = await fetch(
             '/api/book/' + user,
             {
                 body: JSON.stringify({
@@ -27,7 +27,8 @@ export default function Book(props) {
                 method: 'POST'
             }
         );
-        router.push("/success?date=" + date + "&type=" + props.eventType.id + "&user=" + props.user.username);
+        const eventInfo = await res.json();
+        router.push("/success?date=" + date + "&type=" + props.eventType.id + "&user=" + props.user.username + "&hangoutLink=" + eventInfo.hangoutLink);
     }
 
     return (
