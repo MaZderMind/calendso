@@ -14,6 +14,7 @@ export default function EventType(props) {
     const descriptionRef = useRef<HTMLTextAreaElement>();
     const lengthRef = useRef<HTMLInputElement>();
     const isHiddenRef = useRef<HTMLInputElement>();
+    const videoConferenceRef = useRef<HTMLSelectElement>();
 
     if (loading) {
         return <p className="text-gray-400">Loading...</p>;
@@ -31,12 +32,21 @@ export default function EventType(props) {
         const enteredDescription = descriptionRef.current.value;
         const enteredLength = lengthRef.current.value;
         const enteredIsHidden = isHiddenRef.current.checked;
+        const videoConference = videoConferenceRef.current.value;
 
         // TODO: Add validation
 
         const response = await fetch('/api/availability/eventtype', {
             method: 'PATCH',
-            body: JSON.stringify({id: props.eventType.id, title: enteredTitle, slug: enteredSlug, description: enteredDescription, length: enteredLength, hidden: enteredIsHidden}),
+            body: JSON.stringify({
+                id: props.eventType.id,
+                title: enteredTitle,
+                slug: enteredSlug,
+                description: enteredDescription,
+                length: enteredLength,
+                hidden: enteredIsHidden,
+                videoConference: videoConference,
+            }),
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -130,6 +140,17 @@ export default function EventType(props) {
                                             </div>
                                         </div>
                                     </div>
+                                    {props.integrationTyes.includes('google_calendar') &&
+                                        <div className="mb-4">
+                                            <label htmlFor="videoConference" className="block text-sm font-medium text-gray-700">Video Conference</label>
+                                            <div className="mt-1">
+                                                <select ref={videoConferenceRef} name="videoConference" id="videoConference" className="focus:ring-blue-500 focus:border-blue-500 block pr-20 sm:text-sm border-gray-300 rounded-md" defaultValue={props.eventType.videoConference}>
+                                                    <option value="">None</option>
+                                                    <option value="google_meet">Google Meet</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    }
                                     <button type="submit" className="btn btn-primary">Update</button>
                                     <Link href="/availability"><a className="ml-2 btn btn-white">Cancel</a></Link>
                                 </form>
@@ -169,7 +190,8 @@ export async function getServerSideProps(context) {
             email: session.user.email,
         },
         select: {
-            username: true
+            id: true,
+            username: true,
         }
     });
 
@@ -183,14 +205,27 @@ export async function getServerSideProps(context) {
             slug: true,
             description: true,
             length: true,
-            hidden: true
+            hidden: true,
+            videoConference: true,
         }
     });
+
+
+    const credentials = await prisma.credential.findMany({
+        where: {
+            userId: user.id,
+        },
+        select: {
+            type: true
+        }
+    });
+    const integrationTyes = credentials.map(credential => credential.type);
 
     return {
         props: {
             user,
-            eventType
+            eventType,
+            integrationTyes
         },
     }
 }

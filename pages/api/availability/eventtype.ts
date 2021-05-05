@@ -28,6 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const description = req.body.description;
         const length = parseInt(req.body.length);
         const hidden = req.body.hidden;
+        const videoConference = req.body.videoConference || null;
 
         const createEventType = await prisma.eventType.create({
             data: {
@@ -37,6 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 length: length,
                 hidden: hidden,
                 userId: user.id,
+                videoConference: videoConference,
             },
         });
 
@@ -62,6 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const description = req.body.description;
         const length = parseInt(req.body.length);
         const hidden = req.body.hidden;
+        const videoConference = req.body.videoConference || null;
 
         const updateEventType = await prisma.eventType.update({
             where: {
@@ -72,7 +75,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 slug: slug,
                 description: description,
                 length: length,
-                hidden: hidden
+                hidden: hidden,
+                videoConference: videoConference,
             },
         });
 
